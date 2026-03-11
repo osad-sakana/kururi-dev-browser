@@ -1,5 +1,5 @@
-import { useState, KeyboardEvent, FormEvent, useEffect, useRef } from 'react'
 import QRCode from 'qrcode'
+import { FormEvent, KeyboardEvent, useEffect, useRef, useState } from 'react'
 
 interface URLBarProps {
   onNavigate: (url: string) => void
@@ -161,7 +161,7 @@ export function URLBar({ onNavigate, onBack, onForward, onReload, currentUrl }: 
         </button>
 
         {showQr && qrDataUrl && (
-          <div className="absolute right-0 top-full mt-2 z-50 bg-gray-800 border border-gray-600 rounded-lg p-3 shadow-xl">
+          <div className="absolute right-0 top-full mt-2 z-50 w-[200px] bg-gray-800 border border-gray-600 rounded-lg p-3 shadow-xl">
             <p className="text-gray-400 text-xs mb-2 text-center">実機で確認</p>
             <img src={qrDataUrl} alt="QR Code" className="w-40 h-40 rounded" />
             {qrDisplayUrl !== currentUrl && (
