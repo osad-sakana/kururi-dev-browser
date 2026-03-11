@@ -25,6 +25,7 @@ export function URLBar({ onNavigate, onBack, onForward, onReload, currentUrl }: 
   const [inputValue, setInputValue] = useState(currentUrl)
   const [showQr, setShowQr] = useState(false)
   const [qrDataUrl, setQrDataUrl] = useState('')
+  const [qrDisplayUrl, setQrDisplayUrl] = useState('')
   const qrRef = useRef<HTMLDivElement>(null)
 
   const handleSubmit = (e: FormEvent) => {
@@ -43,16 +44,34 @@ export function URLBar({ onNavigate, onBack, onForward, onReload, currentUrl }: 
     }
   }
 
+  const resolveQrUrl = async (url: string): Promise<string> => {
+    try {
+      const parsed = new URL(url)
+      const isLocalhost =
+        parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1'
+      if (isLocalhost && window.electronAPI) {
+        const lanIp = await window.electronAPI.getLanIp()
+        if (lanIp) {
+          parsed.hostname = lanIp
+          return parsed.toString()
+        }
+      }
+    } catch {}
+    return url
+  }
+
   const handleToggleQr = async () => {
     if (!currentUrl) return
     if (!showQr) {
       try {
-        const dataUrl = await QRCode.toDataURL(currentUrl, {
+        const qrUrl = await resolveQrUrl(currentUrl)
+        const dataUrl = await QRCode.toDataURL(qrUrl, {
           width: 200,
           margin: 2,
           color: { dark: '#0f172a', light: '#f8fafc' },
         })
         setQrDataUrl(dataUrl)
+        setQrDisplayUrl(qrUrl)
       } catch {}
     }
     setShowQr((prev) => !prev)
@@ -145,8 +164,11 @@ export function URLBar({ onNavigate, onBack, onForward, onReload, currentUrl }: 
           <div className="absolute right-0 top-full mt-2 z-50 bg-gray-800 border border-gray-600 rounded-lg p-3 shadow-xl">
             <p className="text-gray-400 text-xs mb-2 text-center">実機で確認</p>
             <img src={qrDataUrl} alt="QR Code" className="w-40 h-40 rounded" />
-            <p className="text-gray-500 text-xs mt-2 text-center max-w-[160px] break-all leading-tight">
-              {currentUrl}
+            {qrDisplayUrl !== currentUrl && (
+              <p className="text-blue-400 text-xs mt-1.5 text-center">LAN IPに変換済み</p>
+            )}
+            <p className="text-gray-500 text-xs mt-1 text-center max-w-[160px] break-all leading-tight">
+              {qrDisplayUrl}
             </p>
           </div>
         )}
