@@ -1,4 +1,4 @@
-import { useRef, useEffect, useCallback } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import { DevicePreset } from '../types/device'
 
 interface ViewportPanelProps {
@@ -90,7 +90,7 @@ export function ViewportPanel({
   const scaledHeight = Math.round(Math.min(device.height, 800) * scale)
 
   return (
-    <div className="flex flex-col border border-gray-700 rounded-lg overflow-hidden bg-gray-900 flex-shrink-0">
+    <div className="flex flex-col border border-gray-700 rounded-lg overflow-hidden bg-gray-900">
       <div className="flex items-center justify-between px-3 py-1.5 bg-gray-800 border-b border-gray-700">
         <span className="text-gray-200 text-xs font-medium">{device.name}</span>
         <div className="flex items-center gap-2">

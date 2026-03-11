@@ -1,4 +1,4 @@
-import { useRef, useCallback } from 'react'
+import { useCallback, useRef } from 'react'
 import { Viewport } from '../types/device'
 import { ViewportPanel } from './ViewportPanel'
 
@@ -71,8 +71,8 @@ export function ViewportContainer({
   }
 
   return (
-    <div className="flex-1 overflow-x-auto overflow-y-hidden">
-      <div className="flex gap-4 p-4 h-full" style={{ minWidth: 'max-content' }}>
+    <div className="flex-1 overflow-x-auto overflow-y-auto">
+      <div className="flex gap-4 p-4 items-start" style={{ minWidth: 'max-content' }}>
         {viewports.map((viewport) => (
           <ViewportPanel
             key={`${viewport.device.id}-${currentUrl}`}
