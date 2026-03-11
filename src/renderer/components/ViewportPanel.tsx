@@ -82,6 +82,10 @@ export function ViewportPanel({
     }
   }, [url])
 
+  const scale = 0.75
+  const scaledWidth = Math.round(device.width * scale)
+  const scaledHeight = Math.round(Math.min(device.height, 800) * scale)
+
   return (
     <div className="flex flex-col border border-gray-700 rounded-lg overflow-hidden bg-gray-900 flex-shrink-0">
       <div className="flex items-center justify-between px-3 py-1.5 bg-gray-800 border-b border-gray-700">
@@ -92,8 +96,8 @@ export function ViewportPanel({
       </div>
 
       <div
-        className="relative overflow-auto"
-        style={{ width: device.width, height: Math.min(device.height, 600) }}
+        className="relative overflow-hidden"
+        style={{ width: scaledWidth, height: scaledHeight }}
       >
         {/* @ts-expect-error webview is an Electron-specific element */}
         <webview
@@ -104,8 +108,10 @@ export function ViewportPanel({
           preload={`file://${window.__preloadPath || ''}`}
           style={{
             width: device.width,
-            height: device.height,
+            height: Math.min(device.height, 800),
             display: 'inline-flex',
+            transform: `scale(${scale})`,
+            transformOrigin: 'top left',
           }}
         />
       </div>
