@@ -1,7 +1,7 @@
 import { useState, useCallback, useRef } from 'react'
 
 export function useScrollSync() {
-  const [isEnabled, setIsEnabled] = useState(false)
+  const [isEnabled, setIsEnabled] = useState(true)
   const isSyncingRef = useRef(false)
 
   const toggleScrollSync = useCallback(() => {

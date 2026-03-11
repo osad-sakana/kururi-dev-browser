@@ -22,6 +22,7 @@ export function App() {
   const { isEnabled: isScrollSyncEnabled, toggleScrollSync, handleScrollFrom } = useScrollSync()
   const webviewMapRef = useRef<Map<string, Electron.WebviewTag>>(new Map())
   const [isCapturing, setIsCapturing] = useState(false)
+  const [scale, setScale] = useState(0.75)
 
   const handleNavigate = useCallback(
     (url: string) => {
@@ -140,6 +141,8 @@ export function App() {
           onToggleScrollSync={toggleScrollSync}
           onCaptureAll={handleCaptureAll}
           isCapturing={isCapturing}
+          scale={scale}
+          onScaleChange={setScale}
         />
       </div>
 
@@ -150,6 +153,7 @@ export function App() {
         onScrollChange={handleScrollChange}
         onWebviewsChange={handleWebviewsChange}
         onLoadingChange={setViewportLoading}
+        scale={scale}
       />
     </div>
   )

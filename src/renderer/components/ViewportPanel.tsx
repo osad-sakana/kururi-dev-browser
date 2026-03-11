@@ -9,6 +9,7 @@ interface ViewportPanelProps {
   onWebviewReady: (deviceId: string, webview: Electron.WebviewTag) => void
   onWebviewRemove: (deviceId: string) => void
   onLoadingChange: (deviceId: string, isLoading: boolean) => void
+  scale: number
 }
 
 export function ViewportPanel({
@@ -19,6 +20,7 @@ export function ViewportPanel({
   onWebviewReady,
   onWebviewRemove,
   onLoadingChange,
+  scale,
 }: ViewportPanelProps) {
   const webviewRef = useRef<Electron.WebviewTag>(null)
   const deviceIdRef = useRef(device.id)
@@ -82,7 +84,6 @@ export function ViewportPanel({
     }
   }, [url])
 
-  const scale = 0.75
   const scaledWidth = Math.round(device.width * scale)
   const scaledHeight = Math.round(Math.min(device.height, 800) * scale)
 

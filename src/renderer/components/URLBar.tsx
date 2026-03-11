@@ -22,7 +22,7 @@ function normalizeUrl(input: string): string {
 }
 
 export function URLBar({ onNavigate, onBack, onForward, onReload, currentUrl }: URLBarProps) {
-  const [inputValue, setInputValue] = useState(currentUrl)
+  const [inputValue, setInputValue] = useState(currentUrl || 'http://localhost:3000')
   const [showQr, setShowQr] = useState(false)
   const [qrDataUrl, setQrDataUrl] = useState('')
   const [qrDisplayUrl, setQrDisplayUrl] = useState('')
