@@ -153,6 +153,7 @@ export function App() {
         onScrollChange={handleScrollChange}
         onWebviewsChange={handleWebviewsChange}
         onLoadingChange={setViewportLoading}
+        onCloseDevice={toggleDevice}
         scale={scale}
       />
     </div>

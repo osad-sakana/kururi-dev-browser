@@ -9,6 +9,7 @@ interface ViewportContainerProps {
   onScrollChange: (sourceDeviceId: string, ratio: number) => void
   onWebviewsChange: (webviews: Map<string, Electron.WebviewTag>) => void
   onLoadingChange: (deviceId: string, isLoading: boolean) => void
+  onCloseDevice: (deviceId: string) => void
   scale: number
 }
 
@@ -19,6 +20,7 @@ export function ViewportContainer({
   onScrollChange,
   onWebviewsChange,
   onLoadingChange,
+  onCloseDevice,
   scale,
 }: ViewportContainerProps) {
   const webviewMapRef = useRef<Map<string, Electron.WebviewTag>>(new Map())
@@ -81,6 +83,7 @@ export function ViewportContainer({
             onWebviewReady={handleWebviewReady}
             onWebviewRemove={handleWebviewRemove}
             onLoadingChange={onLoadingChange}
+            onClose={onCloseDevice}
             scale={scale}
           />
         ))}
