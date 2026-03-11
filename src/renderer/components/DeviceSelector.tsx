@@ -51,7 +51,16 @@ export function DeviceSelector({
       {isOpen && (
         <div className="absolute top-full left-0 mt-1 w-72 bg-gray-800 border border-gray-600 rounded-lg shadow-xl z-50">
           <div className="p-3">
-            <p className="text-xs text-gray-400 mb-2">デバイスを選択（最大6台）</p>
+            <div className="flex items-center justify-between mb-2">
+            <p className="text-xs text-gray-400">デバイスを選択（最大6台）</p>
+            <button
+              onClick={() => setIsOpen(false)}
+              className="text-gray-500 hover:text-gray-200 transition-colors leading-none"
+              title="閉じる"
+            >
+              ×
+            </button>
+          </div>
             <div className="space-y-1">
               {allDevices.map((device) => {
                 const isSelected = selectedDeviceIds.includes(device.id)
