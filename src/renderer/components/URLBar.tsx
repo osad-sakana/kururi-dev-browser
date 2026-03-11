@@ -1,4 +1,5 @@
-import { useState, KeyboardEvent, FormEvent } from 'react'
+import { useState, KeyboardEvent, FormEvent, useEffect, useRef } from 'react'
+import QRCode from 'qrcode'
 
 interface URLBarProps {
   onNavigate: (url: string) => void
@@ -22,6 +23,9 @@ function normalizeUrl(input: string): string {
 
 export function URLBar({ onNavigate, onBack, onForward, onReload, currentUrl }: URLBarProps) {
   const [inputValue, setInputValue] = useState(currentUrl)
+  const [showQr, setShowQr] = useState(false)
+  const [qrDataUrl, setQrDataUrl] = useState('')
+  const qrRef = useRef<HTMLDivElement>(null)
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault()
@@ -35,8 +39,36 @@ export function URLBar({ onNavigate, onBack, onForward, onReload, currentUrl }: 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Escape') {
       setInputValue(currentUrl)
+      setShowQr(false)
     }
   }
+
+  const handleToggleQr = async () => {
+    if (!currentUrl) return
+    if (!showQr) {
+      try {
+        const dataUrl = await QRCode.toDataURL(currentUrl, {
+          width: 200,
+          margin: 2,
+          color: { dark: '#0f172a', light: '#f8fafc' },
+        })
+        setQrDataUrl(dataUrl)
+      } catch {}
+    }
+    setShowQr((prev) => !prev)
+  }
+
+  // QRポップアップ外クリックで閉じる
+  useEffect(() => {
+    if (!showQr) return
+    const handler = (e: MouseEvent) => {
+      if (qrRef.current && !qrRef.current.contains(e.target as Node)) {
+        setShowQr(false)
+      }
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [showQr])
 
   return (
     <div className="flex items-center gap-2 px-3 py-2 bg-gray-900 border-b border-gray-700">
@@ -86,6 +118,39 @@ export function URLBar({ onNavigate, onBack, onForward, onReload, currentUrl }: 
           className="w-full px-3 py-1.5 bg-gray-800 border border-gray-600 rounded text-gray-100 text-sm placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
         />
       </form>
+
+      {/* QRコードボタン */}
+      <div className="relative" ref={qrRef}>
+        <button
+          onClick={handleToggleQr}
+          disabled={!currentUrl}
+          className={`p-1.5 rounded transition-colors disabled:opacity-30 disabled:cursor-not-allowed ${
+            showQr
+              ? 'bg-blue-600 text-white'
+              : 'hover:bg-gray-700 text-gray-400 hover:text-white'
+          }`}
+          title="QRコードで実機確認"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"
+            />
+          </svg>
+        </button>
+
+        {showQr && qrDataUrl && (
+          <div className="absolute right-0 top-full mt-2 z-50 bg-gray-800 border border-gray-600 rounded-lg p-3 shadow-xl">
+            <p className="text-gray-400 text-xs mb-2 text-center">実機で確認</p>
+            <img src={qrDataUrl} alt="QR Code" className="w-40 h-40 rounded" />
+            <p className="text-gray-500 text-xs mt-2 text-center max-w-[160px] break-all leading-tight">
+              {currentUrl}
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

@@ -5,6 +5,7 @@ import { DeviceSelector } from './components/DeviceSelector'
 import { Toolbar } from './components/Toolbar'
 import { useViewports } from './hooks/useViewports'
 import { useScrollSync } from './hooks/useScrollSync'
+import { addCaptureHeader } from './utils/captureUtils'
 
 export function App() {
   const {
@@ -82,8 +83,17 @@ export function App() {
       for (const [deviceId, webview] of webviewMapRef.current.entries()) {
         try {
           const image = await webview.capturePage()
-          const buffer = image.toPNG()
-          captures.push({ deviceId, buffer })
+          const rawBuffer = image.toPNG()
+          const device = allDevices.find((d) => d.id === deviceId)
+          const composited = await addCaptureHeader(
+            rawBuffer,
+            device?.name ?? deviceId,
+            device?.width ?? 0,
+            device?.height ?? 0,
+            currentUrl,
+            now
+          )
+          captures.push({ deviceId, buffer: composited })
         } catch (err) {
           console.error(`Failed to capture ${deviceId}:`, err)
         }
