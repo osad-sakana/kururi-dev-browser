@@ -6,8 +6,6 @@ const SCALE_OPTIONS = [
 ]
 
 interface ToolbarProps {
-  isScrollSyncEnabled: boolean
-  onToggleScrollSync: () => void
   onCaptureAll: () => void
   isCapturing: boolean
   scale: number
@@ -15,8 +13,6 @@ interface ToolbarProps {
 }
 
 export function Toolbar({
-  isScrollSyncEnabled,
-  onToggleScrollSync,
   onCaptureAll,
   isCapturing,
   scale,
@@ -24,26 +20,6 @@ export function Toolbar({
 }: ToolbarProps) {
   return (
     <div className="flex items-center gap-2">
-      <button
-        onClick={onToggleScrollSync}
-        className={`flex items-center gap-1.5 px-3 py-1.5 text-sm rounded transition-colors ${
-          isScrollSyncEnabled
-            ? 'bg-blue-600 hover:bg-blue-500 text-white'
-            : 'bg-gray-700 hover:bg-gray-600 text-gray-200'
-        }`}
-        title="スクロール同期"
-      >
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
-          />
-        </svg>
-        スクロール同期 {isScrollSyncEnabled ? 'ON' : 'OFF'}
-      </button>
-
       <div className="flex items-center gap-1">
         <svg className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />

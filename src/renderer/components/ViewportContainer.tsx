@@ -5,8 +5,6 @@ import { ViewportPanel } from './ViewportPanel'
 interface ViewportContainerProps {
   viewports: Viewport[]
   currentUrl: string
-  isScrollSyncEnabled: boolean
-  onScrollChange: (sourceDeviceId: string, ratio: number) => void
   onWebviewsChange: (webviews: Map<string, Electron.WebviewTag>) => void
   onLoadingChange: (deviceId: string, isLoading: boolean) => void
   onCloseDevice: (deviceId: string) => void
@@ -16,8 +14,6 @@ interface ViewportContainerProps {
 export function ViewportContainer({
   viewports,
   currentUrl,
-  isScrollSyncEnabled,
-  onScrollChange,
   onWebviewsChange,
   onLoadingChange,
   onCloseDevice,
@@ -78,8 +74,6 @@ export function ViewportContainer({
             key={`${viewport.device.id}-${currentUrl}`}
             device={viewport.device}
             url={currentUrl}
-            isScrollSyncEnabled={isScrollSyncEnabled}
-            onScrollChange={onScrollChange}
             onWebviewReady={handleWebviewReady}
             onWebviewRemove={handleWebviewRemove}
             onLoadingChange={onLoadingChange}

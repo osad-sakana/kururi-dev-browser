@@ -4,7 +4,6 @@ import { ViewportContainer } from './components/ViewportContainer'
 import { DeviceSelector } from './components/DeviceSelector'
 import { Toolbar } from './components/Toolbar'
 import { useViewports } from './hooks/useViewports'
-import { useScrollSync } from './hooks/useScrollSync'
 import { addCaptureHeader } from './utils/captureUtils'
 
 export function App() {
@@ -19,7 +18,6 @@ export function App() {
     setViewportLoading,
   } = useViewports()
 
-  const { isEnabled: isScrollSyncEnabled, toggleScrollSync, handleScrollFrom } = useScrollSync()
   const webviewMapRef = useRef<Map<string, Electron.WebviewTag>>(new Map())
   const [isCapturing, setIsCapturing] = useState(false)
   const [scale, setScale] = useState(0.75)
@@ -58,13 +56,6 @@ export function App() {
   const handleWebviewsChange = useCallback((webviews: Map<string, Electron.WebviewTag>) => {
     webviewMapRef.current = webviews
   }, [])
-
-  const handleScrollChange = useCallback(
-    (sourceDeviceId: string, ratio: number) => {
-      handleScrollFrom(sourceDeviceId, ratio, webviewMapRef.current)
-    },
-    [handleScrollFrom]
-  )
 
   const handleCaptureAll = useCallback(async () => {
     if (!currentUrl || webviewMapRef.current.size === 0) return
@@ -137,8 +128,6 @@ export function App() {
           onAddCustomDevice={addCustomDevice}
         />
         <Toolbar
-          isScrollSyncEnabled={isScrollSyncEnabled}
-          onToggleScrollSync={toggleScrollSync}
           onCaptureAll={handleCaptureAll}
           isCapturing={isCapturing}
           scale={scale}
@@ -149,8 +138,6 @@ export function App() {
       <ViewportContainer
         viewports={activeViewports}
         currentUrl={currentUrl}
-        isScrollSyncEnabled={isScrollSyncEnabled}
-        onScrollChange={handleScrollChange}
         onWebviewsChange={handleWebviewsChange}
         onLoadingChange={setViewportLoading}
         onCloseDevice={toggleDevice}

@@ -4,8 +4,6 @@ import { DevicePreset } from '../types/device'
 interface ViewportPanelProps {
   device: DevicePreset
   url: string
-  isScrollSyncEnabled: boolean
-  onScrollChange: (deviceId: string, ratio: number) => void
   onWebviewReady: (deviceId: string, webview: Electron.WebviewTag) => void
   onWebviewRemove: (deviceId: string) => void
   onLoadingChange: (deviceId: string, isLoading: boolean) => void
@@ -16,8 +14,6 @@ interface ViewportPanelProps {
 export function ViewportPanel({
   device,
   url,
-  isScrollSyncEnabled,
-  onScrollChange,
   onWebviewReady,
   onWebviewRemove,
   onLoadingChange,
@@ -27,44 +23,13 @@ export function ViewportPanel({
   const webviewRef = useRef<Electron.WebviewTag>(null)
   const deviceIdRef = useRef(device.id)
 
-  const handleScroll = useCallback(
-    (ratio: number) => {
-      onScrollChange(device.id, ratio)
-    },
-    [device.id, onScrollChange]
-  )
-
   useEffect(() => {
     const webview = webviewRef.current
     if (!webview) return
 
-    const onReady = () => {
-      onWebviewReady(device.id, webview)
-    }
-
+    const onReady = () => onWebviewReady(device.id, webview)
     const onLoadStart = () => onLoadingChange(device.id, true)
-    const onLoadStop = () => {
-      onLoadingChange(device.id, false)
-      if (isScrollSyncEnabled) {
-        webview
-          .executeJavaScript(`
-          window.__kururiDeviceId = '${device.id}';
-          (function() {
-            if (window.__kururiScrollListener) return;
-            window.__kururiScrollListener = true;
-            window.addEventListener('scroll', function() {
-              if (window.__programmaticScroll) return;
-              const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-              if (maxScroll > 0) {
-                const ratio = window.scrollY / maxScroll;
-                window.electronAPI && window.electronAPI.notifyScroll('${device.id}', ratio);
-              }
-            }, { passive: true });
-          })();
-        `)
-          .catch(() => {})
-      }
-    }
+    const onLoadStop = () => onLoadingChange(device.id, false)
 
     webview.addEventListener('dom-ready', onReady)
     webview.addEventListener('did-start-loading', onLoadStart)
@@ -76,7 +41,7 @@ export function ViewportPanel({
       webview.removeEventListener('did-stop-loading', onLoadStop)
       onWebviewRemove(deviceIdRef.current)
     }
-  }, [device.id, isScrollSyncEnabled, onWebviewReady, onWebviewRemove, onLoadingChange, handleScroll])
+  }, [device.id, onWebviewReady, onWebviewRemove, onLoadingChange])
 
   useEffect(() => {
     const webview = webviewRef.current
@@ -117,7 +82,6 @@ export function ViewportPanel({
           src={url || 'about:blank'}
           useragent={device.userAgent}
           webpreferences="contextIsolation=true"
-          preload={`file://${window.__preloadPath || ''}`}
           style={{
             width: device.width,
             height: Math.min(device.height, 800),
