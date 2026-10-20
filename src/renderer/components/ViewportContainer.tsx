@@ -7,6 +7,7 @@ interface ViewportContainerProps {
   viewports: Viewport[]
   currentUrl: string
   onScrollAnchor: (deviceId: string, anchor: ScrollAnchor) => void
+  onLinkNavigate: (deviceId: string, url: string) => void
   onWebviewsChange: (webviews: Map<string, Electron.WebviewTag>) => void
   onLoadingChange: (deviceId: string, isLoading: boolean) => void
   onCloseDevice: (deviceId: string) => void
@@ -17,6 +18,7 @@ export function ViewportContainer({
   viewports,
   currentUrl,
   onScrollAnchor,
+  onLinkNavigate,
   onWebviewsChange,
   onLoadingChange,
   onCloseDevice,
@@ -78,6 +80,7 @@ export function ViewportContainer({
             device={viewport.device}
             url={currentUrl}
             onScrollAnchor={onScrollAnchor}
+            onLinkNavigate={onLinkNavigate}
             onWebviewReady={handleWebviewReady}
             onWebviewRemove={handleWebviewRemove}
             onLoadingChange={onLoadingChange}
