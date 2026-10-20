@@ -53,7 +53,7 @@ export function App() {
   const handleReload = useCallback(() => {
     webviewMapRef.current.forEach((webview) => {
       try {
-        webview.reload()
+        webview.reloadIgnoringCache()
       } catch {}
     })
   }, [])
