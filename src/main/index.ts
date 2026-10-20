@@ -1,4 +1,4 @@
-import { app, BrowserWindow, session } from 'electron'
+import { app, BrowserWindow, session, shell } from 'electron'
 import { join } from 'path'
 import { registerIpcHandlers } from './ipc-handlers'
 
@@ -77,6 +77,12 @@ app.on('window-all-closed', () => {
 
 app.on('web-contents-created', (_event, contents) => {
   if (contents.getType() === 'webview') {
+    contents.setWindowOpenHandler(({ url }) => {
+      if (url.startsWith('http://') || url.startsWith('https://')) {
+        shell.openExternal(url)
+      }
+      return { action: 'deny' }
+    })
     contents.on('will-navigate', (_navEvent, url) => {
       if (!url.startsWith('http://') && !url.startsWith('https://') && url !== 'about:blank') {
         _navEvent.preventDefault()
