@@ -1,10 +1,13 @@
 import { useCallback, useRef } from 'react'
 import { Viewport } from '../types/device'
+import type { ScrollAnchor } from '../../shared/scrollAnchor'
 import { ViewportPanel } from './ViewportPanel'
 
 interface ViewportContainerProps {
   viewports: Viewport[]
   currentUrl: string
+  onScrollAnchor: (deviceId: string, anchor: ScrollAnchor) => void
+  onLinkNavigate: (deviceId: string, url: string) => void
   onWebviewsChange: (webviews: Map<string, Electron.WebviewTag>) => void
   onLoadingChange: (deviceId: string, isLoading: boolean) => void
   onCloseDevice: (deviceId: string) => void
@@ -14,6 +17,8 @@ interface ViewportContainerProps {
 export function ViewportContainer({
   viewports,
   currentUrl,
+  onScrollAnchor,
+  onLinkNavigate,
   onWebviewsChange,
   onLoadingChange,
   onCloseDevice,
@@ -74,6 +79,8 @@ export function ViewportContainer({
             key={`${viewport.device.id}-${currentUrl}`}
             device={viewport.device}
             url={currentUrl}
+            onScrollAnchor={onScrollAnchor}
+            onLinkNavigate={onLinkNavigate}
             onWebviewReady={handleWebviewReady}
             onWebviewRemove={handleWebviewRemove}
             onLoadingChange={onLoadingChange}

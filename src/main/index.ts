@@ -23,7 +23,23 @@ function createWindow(): void {
     },
   })
 
+  const webviewPreloadPath = join(__dirname, '../preload/webview.mjs')
+  mainWindow.webContents.on('will-attach-webview', (_event, webPreferences, params) => {
+    delete params.preload
+    webPreferences.preload = webviewPreloadPath
+    webPreferences.nodeIntegration = false
+    webPreferences.contextIsolation = true
+    webPreferences.sandbox = false
+  })
+
+  // CSP はアプリ自身のUIにのみ適用する。webview(同じデフォルトセッション)のページに
+  // 適用すると、外部スクリプト・CSS・画像が遮断され Splide 等が動作しなくなる
+  const appWebContentsId = mainWindow.webContents.id
   mainWindow.webContents.session.webRequest.onHeadersReceived((details, callback) => {
+    if (details.webContentsId !== appWebContentsId) {
+      callback({ responseHeaders: details.responseHeaders })
+      return
+    }
     callback({
       responseHeaders: {
         ...details.responseHeaders,

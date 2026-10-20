@@ -1,9 +1,12 @@
 import { useCallback, useEffect, useRef } from 'react'
+import { SCROLL_ANCHOR_CHANNEL, type ScrollAnchor } from '../../shared/scrollAnchor'
 import { DevicePreset } from '../types/device'
 
 interface ViewportPanelProps {
   device: DevicePreset
   url: string
+  onScrollAnchor: (deviceId: string, anchor: ScrollAnchor) => void
+  onLinkNavigate: (deviceId: string, url: string) => void
   onWebviewReady: (deviceId: string, webview: Electron.WebviewTag) => void
   onWebviewRemove: (deviceId: string) => void
   onLoadingChange: (deviceId: string, isLoading: boolean) => void
@@ -14,6 +17,8 @@ interface ViewportPanelProps {
 export function ViewportPanel({
   device,
   url,
+  onScrollAnchor,
+  onLinkNavigate,
   onWebviewReady,
   onWebviewRemove,
   onLoadingChange,
@@ -31,17 +36,29 @@ export function ViewportPanel({
     const onLoadStart = () => onLoadingChange(device.id, true)
     const onLoadStop = () => onLoadingChange(device.id, false)
 
+    const onIpcMessage = (event: Electron.IpcMessageEvent) => {
+      if (event.channel === SCROLL_ANCHOR_CHANNEL) {
+        onScrollAnchor(device.id, event.args[0] as ScrollAnchor)
+      }
+    }
+
+    const onWillNavigate = (event: Electron.WillNavigateEvent) => onLinkNavigate(device.id, event.url)
+
     webview.addEventListener('dom-ready', onReady)
+    webview.addEventListener('will-navigate', onWillNavigate)
+    webview.addEventListener('ipc-message', onIpcMessage)
     webview.addEventListener('did-start-loading', onLoadStart)
     webview.addEventListener('did-stop-loading', onLoadStop)
 
     return () => {
       webview.removeEventListener('dom-ready', onReady)
+      webview.removeEventListener('will-navigate', onWillNavigate)
+      webview.removeEventListener('ipc-message', onIpcMessage)
       webview.removeEventListener('did-start-loading', onLoadStart)
       webview.removeEventListener('did-stop-loading', onLoadStop)
       onWebviewRemove(deviceIdRef.current)
     }
-  }, [device.id, onWebviewReady, onWebviewRemove, onLoadingChange])
+  }, [device.id, onScrollAnchor, onLinkNavigate, onWebviewReady, onWebviewRemove, onLoadingChange])
 
   useEffect(() => {
     const webview = webviewRef.current
