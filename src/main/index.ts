@@ -59,6 +59,10 @@ app.whenReady().then(() => {
     })
   })
 
+  if (isDev && process.platform === 'darwin') {
+    app.dock?.setIcon(join(__dirname, '../../build/icon.png'))
+  }
+
   registerIpcHandlers()
   createWindow()
 
