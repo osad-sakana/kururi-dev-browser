@@ -13,6 +13,12 @@ export default defineConfig({
     plugins: [externalizeDepsPlugin()],
     build: {
       outDir: 'out/preload',
+      rollupOptions: {
+        input: {
+          index: resolve('src/preload/index.ts'),
+          webview: resolve('src/preload/webview.ts'),
+        },
+      },
     },
   },
   renderer: {
