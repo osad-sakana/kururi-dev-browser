@@ -80,9 +80,9 @@ export function applyAnchor(win: Window, anchor: ScrollAnchor): void {
     if (!el) continue
     const rect = el.getBoundingClientRect()
     const offset = i === 0 ? rect.height * anchor.offsetRatio : 0
-    win.scrollTo(0, win.scrollY + rect.top + offset)
+    win.scrollTo({ top: win.scrollY + rect.top + offset, behavior: 'instant' })
     return
   }
   const max = doc.documentElement.scrollHeight - win.innerHeight
-  if (max > 0) win.scrollTo(0, max * anchor.pageRatio)
+  if (max > 0) win.scrollTo({ top: max * anchor.pageRatio, behavior: 'instant' })
 }
