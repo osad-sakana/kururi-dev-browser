@@ -23,6 +23,15 @@ function createWindow(): void {
     },
   })
 
+  const webviewPreloadPath = join(__dirname, '../preload/webview.mjs')
+  mainWindow.webContents.on('will-attach-webview', (_event, webPreferences, params) => {
+    delete params.preload
+    webPreferences.preload = webviewPreloadPath
+    webPreferences.nodeIntegration = false
+    webPreferences.contextIsolation = true
+    webPreferences.sandbox = false
+  })
+
   mainWindow.webContents.session.webRequest.onHeadersReceived((details, callback) => {
     callback({
       responseHeaders: {
